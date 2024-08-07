@@ -1,0 +1,69 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36" version="24.7.6">
+  <diagram id="wSFuxpJYUR7aIMlnwE8o" name="Page-1">
+    <mxGraphModel dx="1354" dy="1713" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="6M6sR3-TnIEsocc94EqA-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="6M6sR3-TnIEsocc94EqA-1" target="6M6sR3-TnIEsocc94EqA-21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="6M6sR3-TnIEsocc94EqA-1" value="&lt;b&gt;&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 18px;&quot;&gt;Algorithmic Trading&lt;/font&gt;&lt;/b&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="690" y="340" width="110" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="6M6sR3-TnIEsocc94EqA-2" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="6M6sR3-TnIEsocc94EqA-1" target="6M6sR3-TnIEsocc94EqA-4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="390" y="460" as="sourcePoint" />
+            <mxPoint x="560" y="440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="6M6sR3-TnIEsocc94EqA-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="6M6sR3-TnIEsocc94EqA-4" target="6M6sR3-TnIEsocc94EqA-19">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="6M6sR3-TnIEsocc94EqA-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="6M6sR3-TnIEsocc94EqA-4" target="6M6sR3-TnIEsocc94EqA-10">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="960" y="468" />
+              <mxPoint x="1080" y="468" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="6M6sR3-TnIEsocc94EqA-4" value="&lt;b&gt;&lt;font face=&quot;Garamond&quot;&gt;Backtesting&lt;/font&gt;&lt;/b&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="920" y="325" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="6M6sR3-TnIEsocc94EqA-10" value="&lt;b&gt;&lt;u&gt;Back testing Biases&lt;/u&gt;&lt;/b&gt;&lt;div&gt;&lt;ol&gt;&lt;li&gt;&lt;b&gt;Optimisation Bias&lt;/b&gt;-adjusting or introducing&lt;br&gt;additional trading parameters until the strategy performance on the back test data set is very&lt;br&gt;attractive. &lt;/li&gt;&lt;li&gt;&amp;nbsp;&lt;b&gt;Look-Ahead Bias&lt;/b&gt;- future data is accidentally included&lt;br&gt;at a point in the simulation where that data would not have actually been available.&lt;/li&gt;&lt;li&gt;&amp;nbsp;&lt;b&gt;Survivorship Bias&lt;/b&gt;-occurs when strategies are tested on datasets that do&lt;br&gt;not include the full universe of prior assets that may have been chosen at a particular point in&lt;br&gt;time, but only consider those that have &quot;survived&quot; to the current time.&lt;/li&gt;&lt;li&gt;&lt;b&gt;&amp;nbsp;Cognitive Bias-&lt;/b&gt;&lt;/li&gt;&lt;/ol&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="480" width="540" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="6M6sR3-TnIEsocc94EqA-11" value="&lt;b&gt;&lt;u&gt;Reasons for Back-testing.&lt;/u&gt;&lt;/b&gt;&lt;div&gt;&lt;ol&gt;&lt;li&gt;&lt;b&gt;Filtration--&lt;/b&gt;retaining of the most reliable strategy.&lt;/li&gt;&lt;li&gt;&lt;b&gt;Modelling-&lt;/b&gt;testing strategy based on inputs such as&amp;nbsp;such as transaction costs, order routing, latency, liquidity or other market micro structure issues.&lt;/li&gt;&lt;li&gt;&lt;b&gt;Optimization-&lt;/b&gt; modifying the quantity or values of the&lt;br&gt;parameters associated with that strategy and recalculating its performance.&lt;/li&gt;&lt;li&gt;&lt;b&gt;Verification-&lt;/b&gt;since strategies are often sourced externally, via our strategy pipeline. Backtesting a strategy ensures that it has not been incorrectly implemented. metrics such as the Sharpe Ratio and Drawdown characteristics. .&lt;/li&gt;&lt;/ol&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="240" width="590" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="6M6sR3-TnIEsocc94EqA-12" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.063;entryY=0.765;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="6M6sR3-TnIEsocc94EqA-4" target="6M6sR3-TnIEsocc94EqA-11">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="600" y="450" as="sourcePoint" />
+            <mxPoint x="720" y="420" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="6M6sR3-TnIEsocc94EqA-16" value="&lt;b&gt;&lt;font face=&quot;Garamond&quot;&gt;&lt;u&gt;Exchange Issues&lt;/u&gt;&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;ol&gt;&lt;li&gt;&lt;font style=&quot;&quot; face=&quot;Garamond&quot;&gt;&lt;b&gt;Order Types - &lt;/b&gt;Market order vs Limit order.&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;font face=&quot;Garamond&quot;&gt;&lt;b&gt;Price Consolidation&lt;/b&gt;&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;font face=&quot;Garamond&quot;&gt;&lt;b&gt;Forex&amp;nbsp; Trading and ECNs&lt;/b&gt;&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;font style=&quot;&quot; face=&quot;Garamond&quot;&gt;&lt;b&gt;Shorting Constraints&lt;/b&gt;&lt;/font&gt;&lt;/li&gt;&lt;/ol&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="20" width="250" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="6M6sR3-TnIEsocc94EqA-17" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=1;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="6M6sR3-TnIEsocc94EqA-4" target="6M6sR3-TnIEsocc94EqA-16">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="600" y="450" as="sourcePoint" />
+            <mxPoint x="570" y="410" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="6M6sR3-TnIEsocc94EqA-19" value="&lt;b&gt;&lt;u&gt;&lt;font face=&quot;Garamond&quot;&gt;Transaction Costs&lt;/font&gt;&lt;/u&gt;&lt;/b&gt;&lt;div&gt;&lt;ol&gt;&lt;li&gt;&lt;font face=&quot;Garamond&quot;&gt;&lt;b&gt;Commission&lt;/b&gt;-&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;font face=&quot;WDNwBDxoStAmNleH2RaQ&quot;&gt;&lt;b&gt;Slippage&lt;/b&gt;-the difference in price achieved between the time when a trading system decides&lt;br&gt;to transact and the time when a transaction is actually carried out at an exchange&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;font face=&quot;WDNwBDxoStAmNleH2RaQ&quot;&gt;&lt;b&gt;Market Impact-&lt;/b&gt;the cost incurred to traders due to the supply/demand dynamics of the exchange&lt;br&gt;(and asset) through which they are trying to trade.&amp;nbsp;&lt;/font&gt;&lt;/li&gt;&lt;/ol&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="860" y="-40" width="310" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="6M6sR3-TnIEsocc94EqA-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="6M6sR3-TnIEsocc94EqA-21" target="6M6sR3-TnIEsocc94EqA-23">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="6M6sR3-TnIEsocc94EqA-21" value="&lt;font face=&quot;Garamond&quot;&gt;&lt;b&gt;Automated Execution&lt;/b&gt;&lt;/font&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="720" y="530" width="110" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="6M6sR3-TnIEsocc94EqA-23" value="&lt;b&gt;&lt;font face=&quot;Garamond&quot;&gt;&lt;u&gt;Back testing Platforms&lt;/u&gt;&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;ol&gt;&lt;li style=&quot;text-align: left;&quot;&gt;&lt;font face=&quot;Garamond&quot;&gt;&lt;b&gt;Speed of Execution-&amp;nbsp;&lt;/b&gt;HFT and UHFT is in C,C++&lt;/font&gt;&lt;/li&gt;&lt;li style=&quot;text-align: left;&quot;&gt;&lt;font face=&quot;Garamond&quot;&gt;&lt;b&gt;Cost&lt;/b&gt;-Excel, Matlab&lt;/font&gt;&lt;/li&gt;&lt;li style=&quot;text-align: left;&quot;&gt;&lt;font face=&quot;Garamond&quot;&gt;Customization- Python and MATLAB&lt;br&gt;&lt;/font&gt;&lt;/li&gt;&lt;/ol&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="880" y="730" width="295" height="170" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
