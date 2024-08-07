@@ -1,8 +1,6 @@
 // TestHello.cpp
 //
-// Showing how to call a function from another file in the main function.
-//
-// DJD
+// Showing how to call a function from another file in the main function.Excellent information
 
 #include "Hello.hpp"	// User-defined include file
 
