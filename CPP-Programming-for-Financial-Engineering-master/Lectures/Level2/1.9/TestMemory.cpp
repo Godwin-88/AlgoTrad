@@ -9,7 +9,7 @@
 
 #include <stdlib.h>
 #include "OptionData.hpp"
-
+//Includes the stdlib.h for memory management functions and OptionData.hpp for the OptionData structure.
 int main()
 {
 
@@ -48,12 +48,27 @@ int main()
 	}
 
 	// Deallocate memory
-	free(myData);
+	free(myData);//The memory allocated for the single object is deallocated using free. This should not call the destructor since free does not invoke the destructor in C++.
 //	free(myDataArray);
-	delete [] myDataArray;
+	delete [] myDataArray;//The memory allocated for the array of objects is deallocated using delete[]. This correctly calls the destructor for each object in the array, ensuring proper cleanup
 
 	//double d = 1/2;
 	//cout << d;
 
 	return 0;
 }
+//Important Points
+//Destructor Usage:
+
+//The destructor ~OptionData() outputs a message when an OptionData object is destroyed. This is useful for tracking when objects are deleted, especially when using dynamic memory allocation.
+//Memory Management:
+
+//The program demonstrates two methods for dynamic memory management:
+//malloc/free: A C-style approach to memory allocation that does not call constructors or destructors.
+//new/delete: A C++-style approach that correctly calls constructors when allocating and destructors when deallocating memory.
+//Potential Issues:
+
+//If you were to uncomment the free(myDataArray);, it would be incorrect because free does not call destructors. Instead, delete[] should be used for memory allocated with new.
+//Printing and Commenting:
+
+//The print statements are commented out, but when uncommented, they would print the contents of each OptionData object in the array.

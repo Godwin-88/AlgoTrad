@@ -14,10 +14,10 @@ using namespace std;
 struct OptionData
 { // Option data + behaviour
 
-	double K;
-	double T;
-	double r;
-	double sig;
+	double K;//Strike price
+	double T;//Expiry Time
+	double r;//INterest Rate
+	double sig;//Volatility
 
 	// Extra data 
 	double D;		// dividend
@@ -33,7 +33,7 @@ struct OptionData
 	}
 };
 
-void print (OptionData data)
+void print (OptionData data)//This function prints the values of the members of an OptionData struct.
 {
 	cout << "Option data ..." << endl;
 	cout << "Strike: " << data.K << endl;
