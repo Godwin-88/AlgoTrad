@@ -15,10 +15,11 @@
 // DJD
 //
 
-#include <math.h>
+#include <math.h>//includes the mathe function library.
 #include <iostream>
 using namespace std;
 
+//f(x)=exp(-x) in code form is written bel
 double f(double x)
 {
 	return exp(-x);
@@ -50,6 +51,20 @@ L1:
 
 	return xcurrent;
 }
+//Parameters:
+//x_0: Initial guess for the fixed-point iteration.
+//tol: The tolerance level for the difference between successive approximations.
+//maxiter: Maximum number of iterations allowed.
+//Logic:
+//The iteration starts with the initial guess x_0.
+//The function f(x) is evaluated, and the result is stored in xcurrent.
+//If the maximum number of iterations is reached (counter >= maxiter), the loop exits, and a message is printed indicating non-convergence.
+//If the difference between xcurrent and x_0 is greater than or equal to tol, the loop continues with the updated value of x_0.
+//The loop uses goto L1 to jump back to the start of the loop.
+//If the loop converges, a message is printed, and the final value is returned.
+
+
+
 
 double ftp_II(double x_0, double tol, long maxiter)
 { // Solution using a hard-code for loop and a break
@@ -81,7 +96,12 @@ double ftp_II(double x_0, double tol, long maxiter)
 	{
 		cout << "Method II has NOT converged in " << counter << " iterations\n";
 	}
-
+//Logic:
+//A for loop is used to iterate up to maxiter times.
+//Each iteration evaluates the function f(x) and checks if the result is within the tolerance level.
+//If convergence is achieved (fabs(xcurrent - x_0) < tol), the loop breaks.
+//After the loop, a message is printed to indicate whether convergence was achieved or not.
+//The final value of xcurrent is returned.
 	return xcurrent;
 }
 
@@ -111,7 +131,11 @@ double ftp_III(double x_0, double tol, long maxiter)
 	
 		x_0 = xcurrent;
 	}
-
+//Logic:
+//A while (true) loop is used to create an infinite loop that continues until a break condition is met.
+//The loop iterates, evaluating f(x) and checking if the result is within the tolerance level.
+//If the maximum number of iterations is reached, or if convergence occurs, the loop breaks and prints a message.
+//The final value of xcurrent is returned.
 	return xcurrent;
 }
 
@@ -132,8 +156,8 @@ int main()
 
 
 	// Testing scope of a variable
+	int j=10;
 	{
-		int j = 10; 
 		cout << "j: " << j << endl;
 	}
 
@@ -143,4 +167,25 @@ int main()
 	return 0;
 }
 
-	
+//Parameters:
+//xInit: Initial guess for the fixed-point iteration (0.5).
+//maxIter: Maximum number of iterations (10000).
+//tol: Tolerance level for convergence (1.0e-5 or 0.00001).
+//Solvers:
+//The main function calls each of the three fixed-point iteration methods and prints the results.
+//Testing Scope of a Variable:
+//The variable j is declared inside a block and printed.
+//The second cout statement will cause a compilation error because j is out of scope. (We discussed this issue earlier.)
+//Summary:
+//Fixed-Point Iteration:
+
+//The code implements three methods to solve the equation 𝑥=exp⁡(−𝑥)using fixed-point iteration.
+//Each method demonstrates a different looping construct (goto, for, and while (true)).
+//Scope of Variables:
+
+//The code also illustrates the concept of variable scope, showing that variables declared within a block are not accessible outside that block.
+//Practical Application:
+
+//This code could be expanded to solve other equations by modifying the function f(x).
+//It could also be enhanced by using function pointers or lambda expressions to pass different functions into the solver methods.
+//This code is a good example of how different control structures can be used in C++ to achieve the same objective, and it also highlights the importance of understanding variable scope.	
