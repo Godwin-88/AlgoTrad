@@ -7,9 +7,9 @@
 //
 // DJD
 
-#include <limits.h> // Least and greatest representation of integer types
-#include <float.h>	// Least and greatest representation of floating point types
-#include <iostream>
+#include <limits.h> // Least and greatest representation of integer types i.e for integer type limits
+#include <float.h>	// Least and greatest representation of floating point types i.e For floating type limits
+#include <iostream> //For input/output operations.
 using namespace std;
 
 int main()				
