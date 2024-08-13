@@ -6,12 +6,13 @@
 from __future__ import print_function
 import pymysql
 pymysql.install_as_MySQLdb()
+import MySQLdb as mdb
 
 import datetime
 from math import ceil
 
 import bs4
-import MySQLdb as mdb
+#import MySQLdb as mdb
 import requests
 
 
