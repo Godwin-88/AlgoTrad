@@ -2,110 +2,68 @@
 # -*- coding: utf-8 -*-
 
 # price_retrieval.py
-
 from __future__ import print_function
 
 import datetime
 import warnings
-
 import pymysql
-pymysql.install_as_MySQLdb()
 import requests
-
-import MySQLdb as mdb
-#from sqlalchemy import create_engine
+import yfinance as yf
 import pandas as pd
 
-
-
-# Obtain a database connection to the MySQL instance
+# Database connection details
 db_host = 'localhost'
 db_user = 'sec_user'
 db_pass = '1120'
 db_name = 'securities_master'
 
-# Create the SQLAlchemy engine
-#engine = create_engine(f"mysql+pymysql://{db_user}:{db_pass}@{db_host}/{db_name}")
-
-'''# Use the engine in pandas
-sql = "SELECT * FROM your_table_name WHERE ticker='GOOG'"
-goog = pd.read_sql_query(sql, con=engine, index_col='price_date')
-
-print(goog.head())'''
-try:
-    con = pymysql.connect(host=db_host, user=db_user, password=db_pass, database=db_name)
-    print("Connected to the database successfully!")
-except pymysql.MySQLError as e:
-    print(f"Error {e.args[0]}: {e.args[1]}")
-
-
-def obtain_list_of_db_tickers():
+def obtain_list_of_db_tickers(con):
     """
     Obtains a list of the ticker symbols in the database.
     """
-    with con: 
-        cur = con.cursor()
+    with con.cursor() as cur: 
         cur.execute("SELECT id, ticker FROM symbol")
         data = cur.fetchall()
         return [(d[0], d[1]) for d in data]
 
-
-def get_daily_historic_data_yahoo(
-        ticker, start_date=(2000,1,1),
-        end_date=datetime.date.today().timetuple()[0:3]
-    ):
+def get_daily_historic_data_yahoo(ticker, start_date="2000-01-01"):
     """
-    Obtains data from Yahoo Finance returns and a list of tuples.
+    Obtains data from Yahoo Finance using yfinance and returns a DataFrame.
 
-    ticker: Yahoo Finance ticker symbol, e.g. "GOOG" for Google, Inc.
-    start_date: Start date in (YYYY, M, D) format
-    end_date: End date in (YYYY, M, D) format
+    ticker: Yahoo Finance ticker symbol, e.g., "GOOG" for Google, Inc.
+    start_date: Start date in "YYYY-MM-DD" format.
     """
-    # Construct the Yahoo URL with the correct integer query parameters
-    # for start and end dates. Note that some parameters are zero-based!
-    ticker_tup = (
-        ticker, start_date[1]-1, start_date[2], 
-        start_date[0], end_date[1]-1, end_date[2], 
-        end_date[0]
-    )
-    yahoo_url = "http://ichart.finance.yahoo.com/table.csv"
-    yahoo_url += "?s=%s&a=%s&b=%s&c=%s&d=%s&e=%s&f=%s"
-    yahoo_url = yahoo_url % ticker_tup
-
-    # Try connecting to Yahoo Finance and obtaining the data
-    # On failure, print an error message.
     try:
-        yf_data = requests.get(yahoo_url).text.split("\n")[1:-1]
-        prices = []
-        for y in yf_data:
-            p = y.strip().split(',')
-            prices.append( 
-                (datetime.datetime.strptime(p[0], '%Y-%m-%d'),
-                p[1], p[2], p[3], p[4], p[5], p[6]) 
-            )
+        ticker_data = yf.Ticker(ticker)
+        df = ticker_data.history(start=start_date, end=datetime.date.today().strftime("%Y-%m-%d"))
+
+        # Check if 'Adj Close' is available, otherwise fallback to 'Close'
+        if 'Adj Close' not in df.columns:
+            print(f"Warning: 'Adj Close' not available for {ticker}. Using 'Close' instead.")
+            df['Adj Close'] = df['Close']
+        
+        df = df[['Open', 'High', 'Low', 'Close', 'Volume', 'Adj Close']]
+        df.reset_index(inplace=True)
+        df['Date'] = pd.to_datetime(df['Date'])
+        return df
     except Exception as e:
-        print("Could not download Yahoo data: %s" % e)
-    return prices
+        print(f"Could not download Yahoo data for {ticker}: {e}")
+        return None
 
-
-def insert_daily_data_into_db(
-        data_vendor_id, symbol_id, daily_data
-    ):
+def insert_daily_data_into_db(con, data_vendor_id, symbol_id, daily_data):
     """
-    Takes a list of tuples of daily data and adds it to the
+    Takes a DataFrame of daily data and adds it to the
     MySQL database. Appends the vendor ID and symbol ID to the data.
-
-    daily_data: List of tuples of the OHLC data (with 
-    adj_close and volume)
     """
     # Create the time now
     now = datetime.datetime.utcnow()
 
     # Amend the data to include the vendor ID and symbol ID
     daily_data = [
-        (data_vendor_id, symbol_id, d[0], now, now,
-        d[1], d[2], d[3], d[4], d[5], d[6]) 
-        for d in daily_data
+        (data_vendor_id, symbol_id, row['Date'], now, now,
+        row['Open'], row['High'], row['Low'], row['Close'], 
+        row['Volume'], row['Adj Close']) 
+        for index, row in daily_data.iterrows()
     ]
 
     # Create the insert strings
@@ -117,25 +75,39 @@ def insert_daily_data_into_db(
         (column_str, insert_str)
 
     # Using the MySQL connection, carry out an INSERT INTO for every symbol
-    with con: 
-        cur = con.cursor()
-        cur.executemany(final_str, daily_data)
-
+    try:
+        with con.cursor() as cur:
+            cur.executemany(final_str, daily_data)
+        con.commit()
+    except pymysql.MySQLError as e:
+        print(f"Error inserting data into the database: {e}")
+        con.rollback()
 
 if __name__ == "__main__":
     # This ignores the warnings regarding Data Truncation
-    # from the Yahoo precision to Decimal(19,4) datatypes
     warnings.filterwarnings('ignore')
 
-    # Loop over the tickers and insert the daily historical
-    # data into the database
-    tickers = obtain_list_of_db_tickers()
-    lentickers = len(tickers)
-    for i, t in enumerate(tickers):
-        print(
-            "Adding data for %s: %s out of %s" % 
-            (t[1], i+1, lentickers)
-        )
-        yf_data = get_daily_historic_data_yahoo(t[1])
-        insert_daily_data_into_db('1', t[0], yf_data)
-    print("Successfully added Yahoo Finance pricing data to DB.")
+    try:
+        # Establish a database connection
+        con = pymysql.connect(host=db_host, user=db_user, password=db_pass, database=db_name)
+        print("Connected to the database successfully!")
+        
+        # Loop over the tickers and insert the daily historical data into the database
+        tickers = obtain_list_of_db_tickers(con)
+        lentickers = len(tickers)
+        for i, t in enumerate(tickers):
+            print(f"Adding data for {t[1]}: {i+1} out of {lentickers}")
+            yf_data = get_daily_historic_data_yahoo(t[1])
+            if yf_data is not None:
+                insert_daily_data_into_db(con, '1', t[0], yf_data)
+            else:
+                print(f"Skipping {t[1]} due to data retrieval failure.")
+        print("Successfully added Yahoo Finance pricing data to DB.")
+
+    except pymysql.MySQLError as e:
+        print(f"Database error: {e}")
+    
+    finally:
+        if con and con.open:
+            con.close()
+            print("Database connection closed.")
