@@ -6,16 +6,21 @@
 from __future__ import print_function
 
 import pandas as pd
-import MySQLdb as mdb
+#import MySQLdb as mdb
+import pymysql
 
 
 if __name__ == "__main__":
-    # Connect to the MySQL instance
+    # Obtain a database connection to the MySQL instance
     db_host = 'localhost'
     db_user = 'sec_user'
-    db_pass = 'password'
+    db_pass = '1120'
     db_name = 'securities_master'
-    con = mdb.connect(db_host, db_user, db_pass, db_name)
+try:
+    con = pymysql.connect(host=db_host, user=db_user, password=db_pass, database=db_name)
+    print("Connected to the database successfully!")
+except pymysql.MySQLError as e:
+    print(f"Error {e.args[0]}: {e.args[1]}")
 
     # Select all of the historic Google adjusted close data
     sql = """SELECT dp.price_date, dp.adj_close_price

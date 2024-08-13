@@ -13,12 +13,25 @@ pymysql.install_as_MySQLdb()
 import requests
 
 import MySQLdb as mdb
+#from sqlalchemy import create_engine
+import pandas as pd
+
+
 
 # Obtain a database connection to the MySQL instance
 db_host = 'localhost'
 db_user = 'sec_user'
 db_pass = '1120'
 db_name = 'securities_master'
+
+# Create the SQLAlchemy engine
+#engine = create_engine(f"mysql+pymysql://{db_user}:{db_pass}@{db_host}/{db_name}")
+
+'''# Use the engine in pandas
+sql = "SELECT * FROM your_table_name WHERE ticker='GOOG'"
+goog = pd.read_sql_query(sql, con=engine, index_col='price_date')
+
+print(goog.head())'''
 try:
     con = pymysql.connect(host=db_host, user=db_user, password=db_pass, database=db_name)
     print("Connected to the database successfully!")
