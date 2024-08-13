@@ -8,9 +8,11 @@ from __future__ import print_function
 import datetime
 import warnings
 
-import MySQLdb as mdb
+import pymysql
+pymysql.install_as_MySQLdb()
 import requests
 
+import MySQLdb as mdb
 
 # Obtain a database connection to the MySQL instance
 db_host = 'localhost'
