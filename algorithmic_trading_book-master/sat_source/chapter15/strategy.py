@@ -1,24 +1,17 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# strategy.py
-
-from __future__ import print_function
-
-from abc import ABCMeta, abstractmethod
+#strategy.py
+from abc import ABC, abstractmethod
+import queue
 import datetime
-try:
-    import Queue as queue
-except ImportError:
-    import queue
-
 import numpy as np
 import pandas as pd
 
 from event import SignalEvent
 
 
-class Strategy(object):
+class Strategy(ABC):
     """
     Strategy is an abstract base class providing an interface for
     all subsequent (inherited) strategy handling objects.
@@ -32,10 +25,8 @@ class Strategy(object):
     since it obtains the bar tuples from a queue object.
     """
 
-    __metaclass__ = ABCMeta
-
     @abstractmethod
-    def calculate_signals(self):
+    def calculate_signals(self) -> None:
         """
         Provides the mechanisms to calculate the list of signals.
         """

@@ -3,14 +3,9 @@
 
 # ib_execution.py
 
-from __future__ import print_function
-
 import datetime
 import time
-
-from ib.ext.Contract import Contract
-from ib.ext.Order import Order
-from ib.opt import ibConnection, message
+from ib_insync import IB, Stock, MarketOrder, LimitOrder, Contract, Order, Trade
 
 from event import FillEvent, OrderEvent
 from execution import ExecutionHandler
@@ -23,154 +18,82 @@ class IBExecutionHandler(ExecutionHandler):
     directly.
     """
 
-    def __init__(
-        self, events, order_routing="SMART", currency="USD"
-    ):
+    def __init__(self, events, order_routing: str = "SMART", currency: str = "USD"):
         """
-        Initialises the IBExecutionHandler instance.
+        Initializes the IBExecutionHandler instance.
 
         Parameters:
         events - The Queue of Event objects.
+        order_routing - The order routing strategy (default "SMART").
+        currency - The currency for the orders (default "USD").
         """
         self.events = events
         self.order_routing = order_routing
         self.currency = currency
         self.fill_dict = {}
 
-        self.tws_conn = self.create_tws_connection()
+        self.ib = self.create_ib_connection()
         self.order_id = self.create_initial_order_id()
-        self.register_handlers()
 
-    def _error_handler(self, msg):
-        """Handles the capturing of error messages"""
-        # Currently no error handling.
-        print("Server Error: %s" % msg)
-
-    def _reply_handler(self, msg):
-        """Handles of server replies"""
-        # Handle open order orderId processing
-        if msg.typeName == "openOrder" and \
-            msg.orderId == self.order_id and \
-            not self.fill_dict.has_key(msg.orderId):
-            self.create_fill_dict_entry(msg)
-        # Handle Fills
-        if msg.typeName == "orderStatus" and \
-            msg.status == "Filled" and \
-            self.fill_dict[msg.orderId]["filled"] == False:
-            self.create_fill(msg)
-        print("Server Response: %s, %s\n" % (msg.typeName, msg))
-
-    def create_tws_connection(self):
+    def create_ib_connection(self) -> IB:
         """
         Connect to the Trader Workstation (TWS) running on the
-        usual port of 7496, with a clientId of 100.
-        The clientId is chosen by us and we will need
-        separate IDs for both the execution connection and
-        market data connection, if the latter is used elsewhere.
+        usual port of 7497, with a clientId of 1.
         """
-        tws_conn = ibConnection()
-        tws_conn.connect()
-        return tws_conn
+        ib = IB()
+        ib.connect('127.0.0.1', 7497, clientId=1)  # Adjust port and clientId as necessary
+        return ib
 
-    def create_initial_order_id(self):
+    def create_initial_order_id(self) -> int:
         """
         Creates the initial order ID used for Interactive
         Brokers to keep track of submitted orders.
         """
-        # There is scope for more logic here, but we
-        # will use "1" as the default for now.
-        return 1
+        # The order ID management is handled by the IB API itself in ib_insync.
+        return 1  # Placeholder, not strictly necessary with ib_insync.
 
-    def register_handlers(self):
-        """
-        Register the error and server reply
-        message handling functions.
-        """
-        # Assign the error handling function defined above
-        # to the TWS connection
-        self.tws_conn.register(self._error_handler, 'Error')
-
-        # Assign all of the server reply messages to the
-        # reply_handler function defined above
-        self.tws_conn.registerAll(self._reply_handler)
-
-    def create_contract(self, symbol, sec_type, exch, prim_exch, curr):
-        """Create a Contract object defining what will
-        be purchased, at which exchange and in which currency.
-
-        symbol - The ticker symbol for the contract
-        sec_type - The security type for the contract ('STK' is 'stock')
-        exch - The exchange to carry out the contract on
-        prim_exch - The primary exchange to carry out the contract on
-        curr - The currency in which to purchase the contract"""
-        contract = Contract()
-        contract.m_symbol = symbol
-        contract.m_secType = sec_type
-        contract.m_exchange = exch
-        contract.m_primaryExch = prim_exch
-        contract.m_currency = curr
+    def create_contract(self, symbol: str, sec_type: str, exch: str, prim_exch: str, curr: str) -> Contract:
+        """Create a Contract object defining what will be purchased, at which exchange, and in which currency."""
+        contract = Stock(symbol, exchange=exch, currency=curr)
         return contract
 
-    def create_order(self, order_type, quantity, action):
-        """Create an Order object (Market/Limit) to go long/short.
-
-        order_type - 'MKT', 'LMT' for Market or Limit orders
-        quantity - Integral number of assets to order
-        action - 'BUY' or 'SELL'"""
-        order = Order()
-        order.m_orderType = order_type
-        order.m_totalQuantity = quantity
-        order.m_action = action
+    def create_order(self, order_type: str, quantity: int, action: str) -> Order:
+        """Create an Order object (Market/Limit) to go long/short."""
+        if order_type == 'MKT':
+            order = MarketOrder(action, quantity)
+        elif order_type == 'LMT':
+            order = LimitOrder(action, quantity, 0)  # Placeholder for price, adjust as needed
+        else:
+            raise ValueError(f"Order type {order_type} not supported")
         return order
 
-    def create_fill_dict_entry(self, msg):
-        """
-        Creates an entry in the Fill Dictionary that lists
-        orderIds and provides security information. This is
-        needed for the event-driven behaviour of the IB
-        server message behaviour.
-        """
-        self.fill_dict[msg.orderId] = {
-            "symbol": msg.contract.m_symbol,
-            "exchange": msg.contract.m_exchange,
-            "direction": msg.order.m_action,
-            "filled": False
-        }
-
-    def create_fill(self, msg):
+    def create_fill(self, trade: Trade) -> None:
         """
         Handles the creation of the FillEvent that will be
         placed onto the events queue subsequent to an order
         being filled.
         """
-        fd = self.fill_dict[msg.orderId]
-
-        # Prepare the fill data
-        symbol = fd["symbol"]
-        exchange = fd["exchange"]
-        filled = msg.filled
-        direction = fd["direction"]
-        fill_cost = msg.avgFillPrice
+        symbol = trade.contract.symbol
+        exchange = trade.contract.exchange
+        filled = trade.filled
+        direction = trade.order.action
+        fill_cost = trade.avgFillPrice
 
         # Create a fill event object
-        fill = FillEvent(
+        fill_event = FillEvent(
             datetime.datetime.utcnow(), symbol,
             exchange, filled, direction, fill_cost
         )
 
-        # Make sure that multiple messages don't create
-        # additional fills.
-        self.fill_dict[msg.orderId]["filled"] = True
-
         # Place the fill event onto the event queue
         self.events.put(fill_event)
 
-    def execute_order(self, event):
+    def execute_order(self, event: OrderEvent) -> None:
         """
         Creates the necessary InteractiveBrokers order object
         and submits it to IB via their API.
 
-        The results are then queried in order to generate a
+        The results are then queried to generate a
         corresponding Fill object, which is placed back on
         the event queue.
 
@@ -185,27 +108,20 @@ class IBExecutionHandler(ExecutionHandler):
             quantity = event.quantity
             direction = event.direction
 
-            # Create the Interactive Brokers contract via the
-            # passed Order event
+            # Create the Interactive Brokers contract via the passed Order event
             ib_contract = self.create_contract(
-                asset, asset_type, self.order_routing,
-                self.order_routing, self.currency
+                asset, asset_type, self.order_routing, self.order_routing, self.currency
             )
 
-            # Create the Interactive Brokers order via the
-            # passed Order event
-            ib_order = self.create_order(
-                order_type, quantity, direction
-            )
+            # Create the Interactive Brokers order via the passed Order event
+            ib_order = self.create_order(order_type, quantity, direction)
 
-            # Use the connection to the send the order to IB
-            self.tws_conn.placeOrder(
-                self.order_id, ib_contract, ib_order
-            )
+            # Use the connection to send the order to IB
+            trade = self.ib.placeOrder(ib_contract, ib_order)
 
-            # NOTE: This following line is crucial.
-            # It ensures the order goes through!
-            time.sleep(1)
+            # Wait for the order to be filled and process the fill
+            while not trade.isDone():
+                self.ib.sleep(1)
 
-            # Increment the order ID for this session
-            self.order_id += 1
+            # Process the fill
+            self.create_fill(trade)
