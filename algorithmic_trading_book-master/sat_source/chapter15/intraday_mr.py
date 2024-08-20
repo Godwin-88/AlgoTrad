@@ -62,7 +62,7 @@ class IntradayOLSMRStrategy(Strategy):
         self.zscore_low = zscore_low
         self.zscore_high = zscore_high
 
-        self.pair = ('AREX', 'WLL')
+        self.pair = ('GOOG', 'AMZN')
         self.datetime = datetime.datetime.utcnow()
 
         self.long_market = False
@@ -141,8 +141,8 @@ class IntradayOLSMRStrategy(Strategy):
 
 
 if __name__ == "__main__":
-    csv_dir = '/path/to/your/csv/file'  # CHANGE THIS!
-    symbol_list = ['AREX', 'WLL']
+    csv_dir = '/home/ed/AlgorithmicTrading/algorithmic_trading_book-master/sat_source/chapter15' #CHANGE THIS!
+    symbol_list = ['GOOG', 'AMZN']
     initial_capital = 100000.0
     heartbeat = 0.0
     start_date = datetime.datetime(2007, 11, 8, 10, 41, 0)
