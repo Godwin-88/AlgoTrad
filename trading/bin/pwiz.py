@@ -1,4 +1,4 @@
-#!/home/ed/AlgorithmicTrading/trading/bin/python
+#!/home/ed/AlgorithmicTrading/trading/bin/python3
 
 import datetime
 import os
