@@ -48,64 +48,46 @@ class DataHandler(ABC):
         raise NotImplementedError("Should implement update_bars()")
 
 
-class HistoricCSVDataHandler(DataHandler):
-    """
-    HistoricCSVDataHandler is designed to read CSV files for
-    each requested symbol from disk and provide an interface
-    to obtain the "latest" bar in a manner identical to a live
-    trading interface.
-    """
-
+class HistoricCSVDataHandler:
     def __init__(self, events, csv_dir, symbol_list):
-        """
-        Initializes the historic data handler by requesting
-        the location of the CSV files and a list of symbols.
-
-        Parameters:
-        events - The Event Queue.
-        csv_dir - The directory where CSV files are stored.
-        symbol_list - A list of symbol strings.
-        """
         self.events = events
         self.csv_dir = csv_dir
         self.symbol_list = symbol_list
 
         self.symbol_data = {}
         self.latest_symbol_data = {}
-        self.continue_backtest = True
+        self.continue_backtest = True       
         self.bar_index = 0
 
         self._open_convert_csv_files()
 
     def _open_convert_csv_files(self):
-        """
-        Opens the CSV files from the data directory, converting
-        them into pandas DataFrames within a symbol dictionary.
-        """
         comb_index = None
         for symbol in self.symbol_list:
-            df = pd.read_csv(
-                os.path.join(self.csv_dir, f'{symbol}.csv'),
-                header=0, index_col=0, parse_dates=True
-            ).sort_index()
-
-            # Create the 'returns' column based on 'adj_close'
-            df['returns'] = df['adj_close'].pct_change()
-
-            # Store the DataFrame in the symbol dictionary
-            self.symbol_data[symbol] = df
-
-            # Ensure the index for the DataFrame is properly aligned
+            # Load the CSV file, ensure dates are parsed correctly
+            self.symbol_data[symbol] = pd.read_csv(
+                f"{self.csv_dir}/{symbol}.csv", 
+                header=0, 
+                index_col=0, 
+                parse_dates=True,
+                date_parser=lambda x: pd.to_datetime(x, format='%Y-%m-%d')  # Explicit format
+            )
+            
             if comb_index is None:
-                comb_index = df.index
+                comb_index = self.symbol_data[symbol].index
             else:
-                comb_index = comb_index.union(df.index)
-
+                comb_index = comb_index.union(self.symbol_data[symbol].index)
+            
+            # Initialize the latest_symbol_data for this symbol
             self.latest_symbol_data[symbol] = []
 
         for symbol in self.symbol_list:
+            # Ensure the index is in datetime format
+            self.symbol_data[symbol].index = pd.to_datetime(self.symbol_data[symbol].index)
+            # Reindex the DataFrame
             self.symbol_data[symbol] = self.symbol_data[symbol].reindex(index=comb_index, method='pad')
             self.symbol_data[symbol] = self.symbol_data[symbol].iterrows()
+
 
     def get_latest_bar(self, symbol: str):
         """

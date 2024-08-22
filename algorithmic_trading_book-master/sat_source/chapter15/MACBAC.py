@@ -1,10 +1,7 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
-# mac.py
-
 import datetime
 import numpy as np
+import pandas as pd
+import streamlit as st
 from typing import Dict, List
 
 from strategy import Strategy
@@ -75,22 +72,22 @@ class MovingAverageCrossStrategy(Strategy):
                     sig_dir = ""
 
                     if short_sma > long_sma and self.bought[symbol] == "OUT":
-                        print(f"LONG: {bar_date}")
+                        st.write(f"LONG: {bar_date}")
                         sig_dir = 'LONG'
                         signal = SignalEvent(1, symbol, dt, sig_dir, 1.0)
                         self.events.put(signal)
                         self.bought[symbol] = 'LONG'
                     elif short_sma < long_sma and self.bought[symbol] == "LONG":
-                        print(f"SHORT: {bar_date}")
+                        st.write(f"SHORT: {bar_date}")
                         sig_dir = 'EXIT'
                         signal = SignalEvent(1, symbol, dt, sig_dir, 1.0)
                         self.events.put(signal)
                         self.bought[symbol] = 'OUT'
 
 
-if __name__ == "__main__":
+def run_backtest():
     csv_dir = '/home/ed/AlgorithmicTrading/algorithmic_trading_book-master/sat_source/chapter15/'  # CHANGE THIS TO YOUR ACTUAL CSV DIRECTORY
-    symbol_list = ["AAPL", "MSFT", "GOOGL", "AMZN", "FB", "TSLA", "NVDA", "ORCL", "INTC", "ADBE","JPM", "BAC", "WFC", "C", "GS", "MS", "USB", "PNC", "TFC", "BK","GC=F", "SI=F", "CL=F", "BTC-USD", "ETH-USD", "EURUSD=X", "JPY=X", "GBPUSD=X", "USO", "GLD"]
+    symbol_list = ["MS"]
     initial_capital = 100000.0
     heartbeat = 0.0
     start_date = datetime.datetime(1990, 1, 1, 0, 0, 0)
@@ -101,3 +98,30 @@ if __name__ == "__main__":
         Portfolio, MovingAverageCrossStrategy
     )
     backtest.simulate_trading()
+    return backtest.portfolio.equity_curve
+
+
+def plot_results(equity_curve: pd.DataFrame):
+    st.header("Backtest Results")
+    
+    # Plot the equity curve
+    st.subheader("Equity Curve for microsoft")
+    st.line_chart(equity_curve['equity_curve'])
+    
+    # Plot the returns
+    st.subheader("Returns")
+    st.line_chart(equity_curve['returns'])
+    
+    # Plot the drawdowns
+    st.subheader("Drawdowns")
+    st.line_chart(equity_curve['drawdown'])
+    
+
+if __name__ == "__main__":
+    st.title("Moving Average Crossover Strategy Backtest")
+    
+    # Run the backtest
+    equity_curve = run_backtest()
+    
+    # Plot the results
+    plot_results(equity_curve)
